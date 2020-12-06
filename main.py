@@ -1,10 +1,11 @@
 import sys
 import sqlite3
-from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton
+from PyQt5.QtWidgets import QMainWindow, QApplication
 from main_window import Ui_MainWindow
 from PyQt5.Qt import QTableWidgetItem
 from new_file import Ui_WindNewFilm
 from new_genre import Ui_NewGenre
+from dely import Ui_Dely
 
 
 class YearNotExist(Exception):
@@ -26,6 +27,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.load_table()
         self.add_film.clicked.connect(self.add_newItem)
         self.add_genre.clicked.connect(self.add_newGenre)
+        self.del_film.clicked.connect(self.del_file)
+        self.del_genre.clicked.connect(self.del_file)
 
     def load_table(self):
         con = sqlite3.connect('films_db.sqlite')
@@ -62,6 +65,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def add_newGenre(self):
         self.wind = WindNewGenre(self.load_table)
+        self.wind.show()
+
+    def del_file(self):
+        if self.sender().objectName() == 'del_genre':
+            key = 'g'
+        else:
+            key = 'f'
+        self.wind = WindDely(key, self.load_table)
         self.wind.show()
 
 
@@ -138,7 +149,31 @@ class WindNewGenre(QMainWindow, Ui_NewGenre):
             self.label_5.setText('Заполните всю нужную информацию')
 
 
+class WindDely(QMainWindow, Ui_Dely):
+    def __init__(self, key, table):
+        super(WindDely, self).__init__()
+        self.setupUi(self)
+        self.pushButton_2.clicked.connect(self.nope)
+        self.pushButton.clicked.connect(self.yes)
+        if key == 'f':
+            self.key = 'films'
+        else:
+            self.key = 'genres'
+        self.table = table
 
+    def nope(self):
+        self.close()
+
+    def yes(self):
+        try:
+            con = sqlite3.connect('films_db.sqlite')
+            cur = con.cursor()
+            cur.execute(f'DELETE FROM {self.key} WHERE id = ?', (self.spinBox.value(),))
+            con.commit()
+            self.table()
+            self.close()
+        except Exception as e:
+            print(e)
 
 
 if __name__ == '__main__':

@@ -11,7 +11,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
-class Ui_MainWindow(object):
+class Ui_Dely(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(619, 397)
@@ -29,6 +29,7 @@ class Ui_MainWindow(object):
         self.gridLayout.setObjectName("gridLayout")
         self.spinBox = QtWidgets.QSpinBox(self.centralwidget)
         self.spinBox.setObjectName("spinBox")
+        self.spinBox.setMaximum(2 ** 20)
         self.gridLayout.addWidget(self.spinBox, 0, 1, 1, 1)
         self.label = QtWidgets.QLabel(self.centralwidget)
         self.label.setMaximumSize(QtCore.QSize(39, 16777215))
