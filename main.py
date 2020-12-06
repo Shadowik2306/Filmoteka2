@@ -6,6 +6,7 @@ from PyQt5.Qt import QTableWidgetItem
 from new_file import Ui_WindNewFilm
 from new_genre import Ui_NewGenre
 from dely import Ui_Dely
+from updatefilm import Ui_UpdFilm
 
 
 class YearNotExist(Exception):
@@ -29,6 +30,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.add_genre.clicked.connect(self.add_newGenre)
         self.del_film.clicked.connect(self.del_file)
         self.del_genre.clicked.connect(self.del_file)
+        self.update_film.clicked.connect(self.upd_film)
 
     def load_table(self):
         con = sqlite3.connect('films_db.sqlite')
@@ -73,6 +75,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         else:
             key = 'f'
         self.wind = WindDely(key, self.load_table)
+        self.wind.show()
+
+    def upd_film(self):
+        self.wind = WindUpdFilm(self.list_genres, self.load_table)
         self.wind.show()
 
 
@@ -174,6 +180,51 @@ class WindDely(QMainWindow, Ui_Dely):
             self.close()
         except Exception as e:
             print(e)
+
+
+class WindUpdFilm(QMainWindow, Ui_UpdFilm):
+    def __init__(self, genres, table):
+        super(WindUpdFilm, self).__init__()
+        self.setupUi(self)
+        self.table = table
+        self.cancel.clicked.connect(self.nope)
+        self.cont_2.clicked.connect(self.yes)
+        for i in genres:
+            self.genre.addItem(i)
+        self.list_genres = genres
+        self.label_5.setVisible(False)
+
+    def nope(self):
+        self.close()
+
+    def yes(self):
+        try:
+            if not (self.lineEdit.text() and self.name.text()
+                    and self.birthyear.text() and self.length.text()):
+                raise NeedMoreInf
+            if int(self.birthyear.text()) > 2020:
+                raise YearNotExist
+            if int(self.length.text()) < 0:
+                raise StrangeLength
+            con = sqlite3.connect('films_db.sqlite')
+            cur = con.cursor()
+            cur.execute('UPDATE films SET title = ?, year = ?,'
+                        ' genre = ?, duration = ? WHERE id = ?',
+                        (self.name.text(), int(self.birthyear.text()),
+                         self.list_genres.index(self.genre.currentText()) + 1, self.length.text(),
+                         int(self.lineEdit.text())))
+            con.commit()
+            self.table()
+            self.close()
+        except NeedMoreInf:
+            self.label_5.setVisible(True)
+            self.label_5.setText('Заполните всю нужную информацию')
+        except YearNotExist:
+            self.label_5.setVisible(True)
+            self.label_5.setText('Не корректный год')
+        except StrangeLength:
+            self.label_5.setVisible(True)
+            self.label_5.setText('Ошибка продолжительности')
 
 
 if __name__ == '__main__':
