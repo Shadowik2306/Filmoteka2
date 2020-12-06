@@ -1,13 +1,13 @@
 import sys
 import sqlite3
 from PyQt5.QtWidgets import QMainWindow, QApplication
-from main_window import Ui_MainWindow
+from ui.main_window import Ui_MainWindow
 from PyQt5.Qt import QTableWidgetItem
-from new_file import Ui_WindNewFilm
-from new_genre import Ui_NewGenre
-from dely import Ui_Dely
-from updatefilm import Ui_UpdFilm
-from updategenre import Ui_UpdateGenre
+from ui.new_file import Ui_WindNewFilm
+from ui.new_genre import Ui_NewGenre
+from ui.dely import Ui_Dely
+from ui.updatefilm import Ui_UpdFilm
+from ui.updategenre import Ui_UpdateGenre
 
 
 class YearNotExist(Exception):
@@ -35,7 +35,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.update_genre.clicked.connect(self.upd_genre)
 
     def load_table(self):
-        con = sqlite3.connect('films_db.sqlite')
+        con = sqlite3.connect('base/films_db.sqlite')
         self.cur = con.cursor()
         self.list_genres = [i[0] for i in self.cur.execute('SELECT title FROM genres').fetchall()]
         self.tableWidget.setColumnCount(5)
@@ -113,7 +113,7 @@ class WindNewFilm(QMainWindow, Ui_WindNewFilm):
                 raise YearNotExist
             if int(self.length.text()) < 0:
                 raise StrangeLength
-            con = sqlite3.connect('films_db.sqlite')
+            con = sqlite3.connect('base/films_db.sqlite')
             cur = con.cursor()
             cur.execute('INSERT INTO films(id, title, year, genre, duration) VALUES(?, ?, ?, ?, ?)',
                         (self.id + 1, self.name.text(),
@@ -151,7 +151,7 @@ class WindNewGenre(QMainWindow, Ui_NewGenre):
         try:
             if not (self.lineEdit.text()):
                 raise NeedMoreInf
-            con = sqlite3.connect('films_db.sqlite')
+            con = sqlite3.connect('base/films_db.sqlite')
             cur = con.cursor()
             cur.execute('INSERT INTO genres(id, title) VALUES(?, ?)',
                         (cur.execute('SELECT id FROM genres').fetchall()[-1][0] + 1,
@@ -183,7 +183,7 @@ class WindDely(QMainWindow, Ui_Dely):
 
     def yes(self):
         try:
-            con = sqlite3.connect('films_db.sqlite')
+            con = sqlite3.connect('base/films_db.sqlite')
             cur = con.cursor()
             cur.execute(f'DELETE FROM {self.key} WHERE id = ?', (self.spinBox.value(),))
             con.commit()
@@ -217,7 +217,7 @@ class WindUpdFilm(QMainWindow, Ui_UpdFilm):
                 raise YearNotExist
             if int(self.length.text()) < 0:
                 raise StrangeLength
-            con = sqlite3.connect('films_db.sqlite')
+            con = sqlite3.connect('base/films_db.sqlite')
             cur = con.cursor()
             cur.execute('UPDATE films SET title = ?, year = ?,'
                         ' genre = ?, duration = ? WHERE id = ?',
@@ -256,7 +256,7 @@ class WindUpdGenre(QMainWindow, Ui_UpdateGenre):
         try:
             if not (self.lineEdit_2.text()):
                 raise NeedMoreInf
-            con = sqlite3.connect('films_db.sqlite')
+            con = sqlite3.connect('base/films_db.sqlite')
             cur = con.cursor()
             cur.execute('UPDATE genres SET title = ? WHERE id = ?',
                         (self.lineEdit_2.text(), int(self.spinBox.value())))
