@@ -1,9 +1,10 @@
 import sys
 import sqlite3
-from PyQt5.QtWidgets import QMainWindow, QApplication
+from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton
 from main_window import Ui_MainWindow
 from PyQt5.Qt import QTableWidgetItem
-from new_file import Ui_Dialog
+from new_file import Ui_WindNewFilm
+from new_genre import Ui_NewGenre
 
 
 class YearNotExist(Exception):
@@ -18,13 +19,13 @@ class StrangeLength(Exception):
     pass
 
 
-
 class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
         self.setupUi(self)
         self.load_table()
-        self.pushButton.clicked.connect(self.add_newItem)
+        self.add_film.clicked.connect(self.add_newItem)
+        self.add_genre.clicked.connect(self.add_newGenre)
 
     def load_table(self):
         con = sqlite3.connect('films_db.sqlite')
@@ -45,14 +46,26 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 else:
                     self.tableWidget.setItem(i, j, QTableWidgetItem(str(col)))
 
+        self.tableWidget_2.setColumnCount(2)
+        self.tableWidget_2.setHorizontalHeaderLabels(['id', 'title'])
+        self.tableWidget_2.horizontalHeader().setSectionResizeMode(1)
+        self.tableWidget_2.setRowCount(0)
+        for i, row in enumerate(self.cur.execute('SELECT * FROM genres')):
+            self.tableWidget_2.setRowCount(self.tableWidget_2.rowCount() + 1)
+            for j, col in enumerate(row):
+                    self.tableWidget_2.setItem(i, j, QTableWidgetItem(str(col)))
+
     def add_newItem(self):
-        self.wind = DialogWindow(self.cur.execute('SELECT id FROM films').fetchall()[-1][0],
-                                 self.list_genres, self.load_table)
+        self.wind = WindNewFilm(self.cur.execute('SELECT id FROM films').fetchall()[-1][0],
+                                self.list_genres, self.load_table)
+        self.wind.show()
+
+    def add_newGenre(self):
+        self.wind = WindNewGenre(self.load_table)
         self.wind.show()
 
 
-
-class DialogWindow(QMainWindow, Ui_Dialog):
+class WindNewFilm(QMainWindow, Ui_WindNewFilm):
     def __init__(self, id, genres, table):
         super().__init__()
         self.setupUi(self)
@@ -95,6 +108,37 @@ class DialogWindow(QMainWindow, Ui_Dialog):
         except StrangeLength:
             self.label_5.setVisible(True)
             self.label_5.setText('Ошибка продолжительности')
+
+
+class WindNewGenre(QMainWindow, Ui_NewGenre):
+    def __init__(self, table):
+        super(WindNewGenre, self).__init__()
+        self.setupUi(self)
+        self.table = table
+        self.cancel.clicked.connect(self.nope)
+        self.accept.clicked.connect(self.yes)
+
+    def nope(self):
+        self.close()
+
+    def yes(self):
+        try:
+            if not (self.lineEdit.text()):
+                raise NeedMoreInf
+            con = sqlite3.connect('films_db.sqlite')
+            cur = con.cursor()
+            cur.execute('INSERT INTO genres(id, title) VALUES(?, ?)',
+                        (cur.execute('SELECT id FROM genres').fetchall()[-1][0] + 1,
+                         self.lineEdit.text()))
+            con.commit()
+            self.table()
+            self.close()
+        except NeedMoreInf:
+            self.label_5.setVisible(True)
+            self.label_5.setText('Заполните всю нужную информацию')
+
+
+
 
 
 if __name__ == '__main__':
