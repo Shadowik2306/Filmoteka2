@@ -7,6 +7,7 @@ from new_file import Ui_WindNewFilm
 from new_genre import Ui_NewGenre
 from dely import Ui_Dely
 from updatefilm import Ui_UpdFilm
+from updategenre import Ui_UpdateGenre
 
 
 class YearNotExist(Exception):
@@ -31,6 +32,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.del_film.clicked.connect(self.del_file)
         self.del_genre.clicked.connect(self.del_file)
         self.update_film.clicked.connect(self.upd_film)
+        self.update_genre.clicked.connect(self.upd_genre)
 
     def load_table(self):
         con = sqlite3.connect('films_db.sqlite')
@@ -81,6 +83,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.wind = WindUpdFilm(self.list_genres, self.load_table)
         self.wind.show()
 
+    def upd_genre(self):
+        self.wind = WindUpdGenre(self.load_table)
+        self.wind.show()
+
 
 class WindNewFilm(QMainWindow, Ui_WindNewFilm):
     def __init__(self, id, genres, table):
@@ -125,6 +131,8 @@ class WindNewFilm(QMainWindow, Ui_WindNewFilm):
         except StrangeLength:
             self.label_5.setVisible(True)
             self.label_5.setText('Ошибка продолжительности')
+        except Exception:
+            self.close()
 
 
 class WindNewGenre(QMainWindow, Ui_NewGenre):
@@ -134,6 +142,7 @@ class WindNewGenre(QMainWindow, Ui_NewGenre):
         self.table = table
         self.cancel.clicked.connect(self.nope)
         self.accept.clicked.connect(self.yes)
+        self.label_5.setVisible(False)
 
     def nope(self):
         self.close()
@@ -153,6 +162,8 @@ class WindNewGenre(QMainWindow, Ui_NewGenre):
         except NeedMoreInf:
             self.label_5.setVisible(True)
             self.label_5.setText('Заполните всю нужную информацию')
+        except Exception:
+            self.close()
 
 
 class WindDely(QMainWindow, Ui_Dely):
@@ -178,8 +189,8 @@ class WindDely(QMainWindow, Ui_Dely):
             con.commit()
             self.table()
             self.close()
-        except Exception as e:
-            print(e)
+        except Exception:
+            self.close()
 
 
 class WindUpdFilm(QMainWindow, Ui_UpdFilm):
@@ -225,6 +236,38 @@ class WindUpdFilm(QMainWindow, Ui_UpdFilm):
         except StrangeLength:
             self.label_5.setVisible(True)
             self.label_5.setText('Ошибка продолжительности')
+        except Exception:
+            self.close()
+
+
+class WindUpdGenre(QMainWindow, Ui_UpdateGenre):
+    def __init__(self, table):
+        super(WindUpdGenre, self).__init__()
+        self.setupUi(self)
+        self.table = table
+        self.cancel.clicked.connect(self.nope)
+        self.accept.clicked.connect(self.yes)
+        self.label_5.setVisible(False)
+
+    def nope(self):
+        self.close()
+
+    def yes(self):
+        try:
+            if not (self.lineEdit_2.text()):
+                raise NeedMoreInf
+            con = sqlite3.connect('films_db.sqlite')
+            cur = con.cursor()
+            cur.execute('UPDATE genres SET title = ? WHERE id = ?',
+                        (self.lineEdit_2.text(), int(self.spinBox.value())))
+            con.commit()
+            self.table()
+            self.close()
+        except NeedMoreInf:
+            self.label_5.setVisible(True)
+            self.label_5.setText('Заполните всю нужную информацию')
+        except Exception:
+            self.close()
 
 
 if __name__ == '__main__':

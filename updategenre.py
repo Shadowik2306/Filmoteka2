@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'new_genre.ui'
+# Form implementation generated from reading ui file 'updategenre.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.1
 #
@@ -11,36 +11,42 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
-class Ui_NewGenre(object):
+class Ui_UpdateGenre(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(416, 350)
+        MainWindow.resize(347, 285)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
-        self.gridLayout_2 = QtWidgets.QGridLayout(self.centralwidget)
+        self.gridLayout_3 = QtWidgets.QGridLayout(self.centralwidget)
+        self.gridLayout_3.setObjectName("gridLayout_3")
+        self.gridLayout_2 = QtWidgets.QGridLayout()
         self.gridLayout_2.setObjectName("gridLayout_2")
+        self.label_2 = QtWidgets.QLabel(self.centralwidget)
+        self.label_2.setObjectName("label_2")
+        self.gridLayout_2.addWidget(self.label_2, 1, 0, 1, 1)
+        self.lineEdit_2 = QtWidgets.QLineEdit(self.centralwidget)
+        self.lineEdit_2.setObjectName("lineEdit_2")
+        self.gridLayout_2.addWidget(self.lineEdit_2, 1, 1, 1, 1)
+        self.label_3 = QtWidgets.QLabel(self.centralwidget)
+        self.label_3.setObjectName("label_3")
+        self.gridLayout_2.addWidget(self.label_3, 0, 0, 1, 1)
+        self.spinBox = QtWidgets.QSpinBox(self.centralwidget)
+        self.spinBox.setObjectName("spinBox")
+        self.gridLayout_2.addWidget(self.spinBox, 0, 1, 1, 1)
+        self.gridLayout_3.addLayout(self.gridLayout_2, 0, 0, 1, 2)
         self.accept = QtWidgets.QPushButton(self.centralwidget)
         self.accept.setObjectName("accept")
-        self.gridLayout_2.addWidget(self.accept, 1, 0, 1, 1)
-        self.gridLayout = QtWidgets.QGridLayout()
-        self.gridLayout.setObjectName("gridLayout")
-        self.lineEdit = QtWidgets.QLineEdit(self.centralwidget)
-        self.lineEdit.setObjectName("lineEdit")
-        self.gridLayout.addWidget(self.lineEdit, 0, 1, 1, 1)
-        self.label = QtWidgets.QLabel(self.centralwidget)
-        self.label.setObjectName("label")
-        self.gridLayout.addWidget(self.label, 0, 0, 1, 1)
-        self.gridLayout_2.addLayout(self.gridLayout, 0, 0, 1, 2)
+        self.gridLayout_3.addWidget(self.accept, 1, 0, 1, 1)
         self.cancel = QtWidgets.QPushButton(self.centralwidget)
         self.cancel.setObjectName("cancel")
-        self.gridLayout_2.addWidget(self.cancel, 1, 1, 1, 1)
+        self.gridLayout_3.addWidget(self.cancel, 1, 1, 1, 1)
         self.label_5 = QtWidgets.QLabel(self.centralwidget)
         self.label_5.setMaximumSize(QtCore.QSize(16777215, 20))
         self.label_5.setObjectName("label_5")
-        self.gridLayout_2.addWidget(self.label_5, 2, 0, 1, 2)
+        self.gridLayout_3.addWidget(self.label_5, 2, 0, 1, 2)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 416, 20))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 347, 20))
         self.menubar.setObjectName("menubar")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
@@ -53,7 +59,8 @@ class Ui_NewGenre(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        self.label_2.setText(_translate("MainWindow", "Название       "))
+        self.label_3.setText(_translate("MainWindow", "ID"))
         self.accept.setText(_translate("MainWindow", "Добавить"))
-        self.label.setText(_translate("MainWindow", "Название       "))
         self.cancel.setText(_translate("MainWindow", "Отмена"))
         self.label_5.setText(_translate("MainWindow", "TextLabel"))
